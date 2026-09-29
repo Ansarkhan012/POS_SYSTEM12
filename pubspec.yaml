@@ -1,0 +1,30 @@
+name: dokan_pro
+description: "Dokan Pro — offline-first POS for small grocery / kiryana stores."
+# Private application; never published to pub.dev.
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.12.1
+
+# Dependencies are restricted by AGENTS.md §2 and ADR-028. Any addition needs
+# justification and approval.
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+  flutter_riverpod: ^3.4.3
+  # Version is dictated by flutter_localizations / gen-l10n; do not pin separately.
+  intl: any
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+
+flutter:
+  uses-material-design: true
+  # Enables gen-l10n (configured in l10n.yaml).
+  generate: true

@@ -1,0 +1,95 @@
+{
+  "@@locale": "ur",
+  "appTitle": "دکان پرو",
+  "@appTitle": {
+    "description": "PROVISIONAL Urdu placeholder; full Urdu content and review in Phase 14."
+  },
+  "noSessionTitle": "ابھی سیٹ اپ نہیں ہوا",
+  "@noSessionTitle": {
+    "description": "PROVISIONAL Urdu placeholder; full Urdu content and review in Phase 14."
+  },
+  "noSessionMessage": "اس ڈیوائس پر دکان پرو ابھی سیٹ اپ نہیں ہوا۔",
+  "@noSessionMessage": {
+    "description": "PROVISIONAL Urdu placeholder; full Urdu content and review in Phase 14."
+  },
+  "destinationCheckout": "چیک آؤٹ",
+  "@destinationCheckout": {
+    "description": "PROVISIONAL Urdu placeholder; full Urdu content and review in Phase 14."
+  },
+  "destinationMore": "مزید",
+  "@destinationMore": {
+    "description": "PROVISIONAL Urdu placeholder; full Urdu content and review in Phase 14."
+  },
+  "destinationSummary": "خلاصہ",
+  "@destinationSummary": {
+    "description": "PROVISIONAL Urdu placeholder; full Urdu content and review in Phase 14."
+  },
+  "destinationSales": "فروخت",
+  "@destinationSales": {
+    "description": "PROVISIONAL Urdu placeholder; full Urdu content and review in Phase 14."
+  },
+  "destinationInventory": "اسٹاک",
+  "@destinationInventory": {
+    "description": "PROVISIONAL Urdu placeholder; full Urdu content and review in Phase 14."
+  },
+  "destinationUdhaar": "ادھار",
+  "@destinationUdhaar": {
+    "description": "PROVISIONAL Urdu placeholder; full Urdu content and review in Phase 14."
+  },
+  "destinationManagement": "انتظام",
+  "@destinationManagement": {
+    "description": "PROVISIONAL Urdu placeholder; full Urdu content and review in Phase 14."
+  },
+  "destinationOperations": "آپریشنز",
+  "@destinationOperations": {
+    "description": "PROVISIONAL Urdu placeholder; full Urdu content and review in Phase 14."
+  },
+  "destinationReports": "رپورٹس",
+  "@destinationReports": {
+    "description": "PROVISIONAL Urdu placeholder; full Urdu content and review in Phase 14."
+  },
+  "destinationApprovals": "منظوریاں",
+  "@destinationApprovals": {
+    "description": "PROVISIONAL Urdu placeholder; full Urdu content and review in Phase 14."
+  },
+  "placeholderNotAvailable": "یہ حصہ ابھی دستیاب نہیں ہے۔",
+  "@placeholderNotAvailable": {
+    "description": "PROVISIONAL Urdu placeholder; full Urdu content and review in Phase 14."
+  },
+  "languageMenuTooltip": "زبان تبدیل کریں",
+  "@languageMenuTooltip": {
+    "description": "PROVISIONAL Urdu placeholder; full Urdu content and review in Phase 14."
+  },
+  "languageEnglish": "English",
+  "@languageEnglish": {
+    "description": "PROVISIONAL Urdu placeholder; full Urdu content and review in Phase 14. Language names are shown in their own language."
+  },
+  "languageUrdu": "اردو",
+  "@languageUrdu": {
+    "description": "PROVISIONAL Urdu placeholder; full Urdu content and review in Phase 14. Language names are shown in their own language."
+  },
+  "devPreviewBanner": "ڈویلپر پریویو (صرف ڈیبگ بلڈ) — یہ سائن اِن نہیں ہے۔ ماحول: {environment}",
+  "@devPreviewBanner": {
+    "description": "PROVISIONAL Urdu placeholder; full Urdu content and review in Phase 14."
+  },
+  "devPreviewMenuTooltip": "پریویو کردار منتخب کریں (ڈویلپر پریویو، سائن اِن نہیں)",
+  "@devPreviewMenuTooltip": {
+    "description": "PROVISIONAL Urdu placeholder; full Urdu content and review in Phase 14."
+  },
+  "devPreviewNoSession": "کوئی سیشن نہیں",
+  "@devPreviewNoSession": {
+    "description": "PROVISIONAL Urdu placeholder; full Urdu content and review in Phase 14."
+  },
+  "roleOwner": "مالک",
+  "@roleOwner": {
+    "description": "PROVISIONAL Urdu placeholder; full Urdu content and review in Phase 14."
+  },
+  "roleManager": "مینیجر",
+  "@roleManager": {
+    "description": "PROVISIONAL Urdu placeholder; full Urdu content and review in Phase 14."
+  },
+  "roleCashier": "کیشیئر",
+  "@roleCashier": {
+    "description": "PROVISIONAL Urdu placeholder; full Urdu content and review in Phase 14."
+  }
+}

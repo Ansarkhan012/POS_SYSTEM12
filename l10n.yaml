@@ -1,0 +1,8 @@
+# Flutter gen-l10n configuration (ADR-028).
+# Generated Dart files are written next to the ARB files and are NOT committed
+# (see .gitignore); run `flutter gen-l10n` to produce them. Never hand-edit them.
+arb-dir: lib/l10n
+template-arb-file: app_en.arb
+output-localization-file: app_localizations.dart
+output-class: AppLocalizations
+nullable-getter: false

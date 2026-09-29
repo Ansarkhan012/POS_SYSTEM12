@@ -1,0 +1,36 @@
+# Dokan Pro CI (ADR-028): static analysis and tests only.
+# No secrets, no builds uploaded, no deploy/release/publish steps.
+name: CI
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  analyze-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      # actions/checkout v7.0.1
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+
+      # subosito/flutter-action v2.23.0 — pinned to the exact local Flutter version.
+      - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2
+        with:
+          channel: stable
+          flutter-version: 3.44.1
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      # Generated localization files are not committed (see l10n.yaml).
+      - name: Generate localizations
+        run: flutter gen-l10n
+
+      - name: Analyze
+        run: flutter analyze
+
+      - name: Test
+        run: flutter test

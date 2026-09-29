@@ -1,0 +1,101 @@
+{
+  "@@locale": "en",
+  "appTitle": "Dokan Pro",
+  "@appTitle": {
+    "description": "Product name, used as the app title and on the no-session page."
+  },
+  "noSessionTitle": "Not set up yet",
+  "@noSessionTitle": {
+    "description": "Heading of the neutral page shown when there is no session."
+  },
+  "noSessionMessage": "Dokan Pro is not set up on this device yet.",
+  "@noSessionMessage": {
+    "description": "Body of the neutral page shown when there is no session. Must not imply sign-in exists."
+  },
+  "destinationCheckout": "Checkout",
+  "@destinationCheckout": {
+    "description": "Cashier home destination (placeholder)."
+  },
+  "destinationMore": "More",
+  "@destinationMore": {
+    "description": "Cashier's single secondary destination (placeholder)."
+  },
+  "destinationSummary": "Summary",
+  "@destinationSummary": {
+    "description": "Owner home destination (placeholder)."
+  },
+  "destinationSales": "Sales",
+  "@destinationSales": {
+    "description": "Owner destination for sales and profit (placeholder)."
+  },
+  "destinationInventory": "Inventory",
+  "@destinationInventory": {
+    "description": "Owner/manager inventory destination (placeholder)."
+  },
+  "destinationUdhaar": "Udhaar",
+  "@destinationUdhaar": {
+    "description": "Owner destination for customer credit (udhaar) (placeholder)."
+  },
+  "destinationManagement": "Management",
+  "@destinationManagement": {
+    "description": "Owner management destination (placeholder)."
+  },
+  "destinationOperations": "Operations",
+  "@destinationOperations": {
+    "description": "Manager home destination (placeholder)."
+  },
+  "destinationReports": "Reports",
+  "@destinationReports": {
+    "description": "Manager destination for allowed reports (placeholder)."
+  },
+  "destinationApprovals": "Approvals",
+  "@destinationApprovals": {
+    "description": "Manager destination for approved sensitive actions (placeholder)."
+  },
+  "placeholderNotAvailable": "This area is not available yet.",
+  "@placeholderNotAvailable": {
+    "description": "Body text of every placeholder destination page."
+  },
+  "languageMenuTooltip": "Change language",
+  "@languageMenuTooltip": {
+    "description": "Tooltip and accessibility label of the language switch."
+  },
+  "languageEnglish": "English",
+  "@languageEnglish": {
+    "description": "Name of the English language, shown in its own language."
+  },
+  "languageUrdu": "اردو",
+  "@languageUrdu": {
+    "description": "Name of the Urdu language, shown in its own language."
+  },
+  "devPreviewBanner": "Developer preview (debug builds only) — not sign-in. Environment: {environment}",
+  "@devPreviewBanner": {
+    "description": "Label of the debug-only developer role preview bar. Must state it is not sign-in.",
+    "placeholders": {
+      "environment": {
+        "type": "String",
+        "example": "dev"
+      }
+    }
+  },
+  "devPreviewMenuTooltip": "Choose preview role (developer preview, not sign-in)",
+  "@devPreviewMenuTooltip": {
+    "description": "Tooltip and accessibility label of the developer role preview selector."
+  },
+  "devPreviewNoSession": "No session",
+  "@devPreviewNoSession": {
+    "description": "Developer preview option that returns to the no-session state."
+  },
+  "roleOwner": "Owner",
+  "@roleOwner": {
+    "description": "Owner role name in the developer preview selector."
+  },
+  "roleManager": "Manager",
+  "@roleManager": {
+    "description": "Manager role name in the developer preview selector."
+  },
+  "roleCashier": "Cashier",
+  "@roleCashier": {
+    "description": "Cashier role name in the developer preview selector."
+  }
+}
