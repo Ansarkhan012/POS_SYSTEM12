@@ -22,7 +22,7 @@ kiryana / general stores, starting in Karachi, Pakistan. It consists of:
 | Item          | Value                                   |
 |---------------|-----------------------------------------|
 | Active phase  | **Phase 1 — Flutter Foundation**        |
-| Status        | **READY_FOR_REVIEW**                    |
+| Status        | **APPROVED**                            |
 | Phase 0       | APPROVED                                |
 | Phases 2–19   | LOCKED                                  |
 
