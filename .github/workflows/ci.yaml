@@ -1,4 +1,4 @@
-# Dokan Pro CI (ADR-028): static analysis and tests only.
+# Dokan Pro CI (ADR-028, ADR-029): code generation, static analysis and tests only.
 # No secrets, no builds uploaded, no deploy/release/publish steps.
 name: CI
 
@@ -28,6 +28,23 @@ jobs:
       # Generated localization files are not committed (see l10n.yaml).
       - name: Generate localizations
         run: flutter gen-l10n
+
+      # Generated Drift code is not committed (ADR-029, P2-D1).
+      - name: Generate Drift code
+        run: dart run build_runner build
+
+      # The committed schema dump must match the current Drift schema.
+      - name: Verify committed Drift schema dump
+        run: |
+          mkdir -p "$RUNNER_TEMP/drift_schemas"
+          dart run drift_dev schema dump lib/core/database/app_database.dart "$RUNNER_TEMP/drift_schemas/"
+          diff -r "$RUNNER_TEMP/drift_schemas" drift_schemas
+
+      # Schema test helpers are generated from the committed dumps.
+      - name: Generate Drift schema test helpers
+        run: |
+          mkdir -p test/core/database/generated
+          dart run drift_dev schema generate drift_schemas/ test/core/database/generated/
 
       - name: Analyze
         run: flutter analyze

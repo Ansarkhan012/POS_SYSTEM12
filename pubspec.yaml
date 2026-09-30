@@ -18,13 +18,36 @@ dependencies:
   flutter_riverpod: ^3.4.3
   # Version is dictated by flutter_localizations / gen-l10n; do not pin separately.
   intl: any
+  # Phase 2 local data foundation (ADR-016, ADR-027, ADR-029).
+  drift: ^2.35.0
+  # Pinned exactly: the native build hook below selects the encrypted engine
+  # binaries shipped with this exact release (ADR-029).
+  sqlite3: 3.5.2
+  # Pinned exactly (ADR-029): frequent breaking releases in the 11.x line.
+  flutter_secure_storage: 11.2.0
+  path_provider: ^2.1.6
+  path: ^1.9.1
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  integration_test:
+    sdk: flutter
   flutter_lints: ^6.0.0
+  # Drift code generation only (ADR-029, P2-D1). Riverpod code generation
+  # remains forbidden (ADR-028).
+  drift_dev: ^2.35.0
+  # Capped at 2.15.1 by Flutter 3.44.1's meta pin (ADR-029).
+  build_runner: ^2.15.1
 
 flutter:
   uses-material-design: true
   # Enables gen-l10n (configured in l10n.yaml).
   generate: true
+
+# Native build hook configuration (ADR-027, ADR-029): bundle SQLite3 Multiple
+# Ciphers instead of plain SQLite. Never change this to `sqlite3` or `system`.
+hooks:
+  user_defines:
+    sqlite3:
+      source: sqlite3mc

@@ -233,6 +233,10 @@ Rules:
 - SQLite via **Drift** (ADR-016) for transactions, shop product cache, master
   catalog cache, inventory ledger, sales, payments, local sessions, outbox, and
   sync metadata; installed in Phase 2.
+- **Concrete implementation (ADR-029):** SQLite3 Multiple Ciphers bundled by
+  `package:sqlite3` 3.5.2 (hook `source: sqlite3mc`), SQLCipher-4-compatible
+  scheme, raw 256-bit key in `flutter_secure_storage` 11.2.0 (Android
+  Keystore-backed); code in `lib/core/database/`.
 - **Encrypted from the first implementation** (ADR-027): a SQLCipher-compatible
   encrypted SQLite implementation (or explicitly reviewed equivalent); exact
   package/adapter chosen in Phase 2. Strong random key protected by platform-backed

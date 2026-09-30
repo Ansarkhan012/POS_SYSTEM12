@@ -1,0 +1,446 @@
+{
+  "_meta": {
+    "description": "This file contains a serialized version of schema entities for drift.",
+    "version": "1.3.0"
+  },
+  "options": {
+    "store_date_time_values_as_text": false
+  },
+  "entities": [
+    {
+      "id": 0,
+      "references": [],
+      "type": "table",
+      "data": {
+        "name": "outbox_events",
+        "was_declared_in_moor": false,
+        "columns": [
+          {
+            "name": "event_id",
+            "getter_name": "eventId",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "idempotency_key",
+            "getter_name": "idempotencyKey",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "defaultConstraints": "UNIQUE",
+            "dialectAwareDefaultConstraints": {
+              "sqlite": "UNIQUE"
+            },
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": [
+              "unique"
+            ]
+          },
+          {
+            "name": "shop_id",
+            "getter_name": "shopId",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "device_id",
+            "getter_name": "deviceId",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "local_session_id",
+            "getter_name": "localSessionId",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "actor_user_id",
+            "getter_name": "actorUserId",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "device_seq",
+            "getter_name": "deviceSeq",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": null,
+            "defaultConstraints": "UNIQUE",
+            "dialectAwareDefaultConstraints": {
+              "sqlite": "UNIQUE"
+            },
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": [
+              "unique"
+            ]
+          },
+          {
+            "name": "event_type",
+            "getter_name": "eventType",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "schema_version",
+            "getter_name": "schemaVersion",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "payload_json",
+            "getter_name": "payloadJson",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "occurred_at_utc_micros",
+            "getter_name": "occurredAtUtcMicros",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "device_utc_offset_minutes",
+            "getter_name": "deviceUtcOffsetMinutes",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "server_offset_millis",
+            "getter_name": "serverOffsetMillis",
+            "moor_type": "int",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "server_offset_observed_at_utc_micros",
+            "getter_name": "serverOffsetObservedAtUtcMicros",
+            "moor_type": "int",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "time_confidence",
+            "getter_name": "timeConfidence",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "sync_status",
+            "getter_name": "syncStatus",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": "const CustomExpression('\\'PENDING\\'')",
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "attempts",
+            "getter_name": "attempts",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": "const CustomExpression('0')",
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "last_error",
+            "getter_name": "lastError",
+            "moor_type": "string",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "next_attempt_at_utc_micros",
+            "getter_name": "nextAttemptAtUtcMicros",
+            "moor_type": "int",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          }
+        ],
+        "is_virtual": false,
+        "without_rowid": false,
+        "constraints": [
+          "CHECK (device_seq > 0)",
+          "CHECK (schema_version > 0)",
+          "CHECK (attempts >= 0)",
+          "CHECK (length(event_id) > 0)",
+          "CHECK (length(idempotency_key) > 0)",
+          "CHECK (length(shop_id) > 0)",
+          "CHECK (length(device_id) > 0)",
+          "CHECK (length(local_session_id) > 0)",
+          "CHECK (length(actor_user_id) > 0)",
+          "CHECK (length(event_type) > 0)",
+          "CHECK (length(time_confidence) > 0)",
+          "CHECK (sync_status IN ('PENDING', 'IN_FLIGHT', 'ACKED', 'REJECTED', 'CONFLICT'))"
+        ],
+        "strict": true,
+        "explicit_pk": [
+          "event_id"
+        ]
+      }
+    },
+    {
+      "id": 1,
+      "references": [
+        0
+      ],
+      "type": "trigger",
+      "data": {
+        "on": 0,
+        "references_in_body": [
+          0
+        ],
+        "name": "outbox_events_no_delete",
+        "sql": "CREATE TRIGGER outbox_events_no_delete\nBEFORE DELETE ON outbox_events\nBEGIN\n  SELECT RAISE(ABORT, 'outbox_events is append-only: DELETE is forbidden');\nEND;"
+      }
+    },
+    {
+      "id": 2,
+      "references": [
+        0
+      ],
+      "type": "trigger",
+      "data": {
+        "on": 0,
+        "references_in_body": [
+          0
+        ],
+        "name": "outbox_events_envelope_immutable",
+        "sql": "CREATE TRIGGER outbox_events_envelope_immutable\nBEFORE UPDATE OF event_id, idempotency_key, shop_id, device_id,\n  local_session_id, actor_user_id, device_seq, event_type, schema_version,\n  payload_json, occurred_at_utc_micros, device_utc_offset_minutes,\n  server_offset_millis, server_offset_observed_at_utc_micros, time_confidence\nON outbox_events\nBEGIN\n  SELECT RAISE(ABORT, 'outbox_events envelope is immutable');\nEND;"
+      }
+    },
+    {
+      "id": 3,
+      "references": [],
+      "type": "table",
+      "data": {
+        "name": "device_identity",
+        "was_declared_in_moor": false,
+        "columns": [
+          {
+            "name": "singleton",
+            "getter_name": "singleton",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": "const CustomExpression('1')",
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "install_id",
+            "getter_name": "installId",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "created_at_utc_micros",
+            "getter_name": "createdAtUtcMicros",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "last_device_seq",
+            "getter_name": "lastDeviceSeq",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": "const CustomExpression('0')",
+            "default_client_dart": null,
+            "dsl_features": []
+          }
+        ],
+        "is_virtual": false,
+        "without_rowid": false,
+        "constraints": [
+          "CHECK (singleton = 1)",
+          "CHECK (last_device_seq >= 0)",
+          "CHECK (length(install_id) > 0)"
+        ],
+        "strict": true,
+        "explicit_pk": [
+          "singleton"
+        ]
+      }
+    },
+    {
+      "id": 4,
+      "references": [
+        3
+      ],
+      "type": "trigger",
+      "data": {
+        "on": 3,
+        "references_in_body": [
+          3
+        ],
+        "name": "device_identity_no_delete",
+        "sql": "CREATE TRIGGER device_identity_no_delete\nBEFORE DELETE ON device_identity\nBEGIN\n  SELECT RAISE(ABORT, 'device_identity must not be deleted');\nEND;"
+      }
+    },
+    {
+      "id": 5,
+      "references": [
+        3
+      ],
+      "type": "trigger",
+      "data": {
+        "on": 3,
+        "references_in_body": [
+          3
+        ],
+        "name": "device_identity_immutable",
+        "sql": "CREATE TRIGGER device_identity_immutable\nBEFORE UPDATE OF singleton, install_id, created_at_utc_micros\nON device_identity\nBEGIN\n  SELECT RAISE(ABORT, 'device_identity install ID is immutable');\nEND;"
+      }
+    },
+    {
+      "id": 6,
+      "references": [
+        3
+      ],
+      "type": "trigger",
+      "data": {
+        "on": 3,
+        "references_in_body": [
+          3
+        ],
+        "name": "device_identity_sequence_monotonic",
+        "sql": "CREATE TRIGGER device_identity_sequence_monotonic\nBEFORE UPDATE OF last_device_seq ON device_identity\nWHEN NEW.last_device_seq < OLD.last_device_seq\nBEGIN\n  SELECT RAISE(ABORT, 'device sequence must not decrease');\nEND;"
+      }
+    }
+  ],
+  "fixed_sql": [
+    {
+      "name": "outbox_events",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TABLE IF NOT EXISTS \"outbox_events\" (\"event_id\" TEXT NOT NULL, \"idempotency_key\" TEXT NOT NULL UNIQUE, \"shop_id\" TEXT NOT NULL, \"device_id\" TEXT NOT NULL, \"local_session_id\" TEXT NOT NULL, \"actor_user_id\" TEXT NOT NULL, \"device_seq\" INTEGER NOT NULL UNIQUE, \"event_type\" TEXT NOT NULL, \"schema_version\" INTEGER NOT NULL, \"payload_json\" TEXT NOT NULL, \"occurred_at_utc_micros\" INTEGER NOT NULL, \"device_utc_offset_minutes\" INTEGER NOT NULL, \"server_offset_millis\" INTEGER NULL, \"server_offset_observed_at_utc_micros\" INTEGER NULL, \"time_confidence\" TEXT NOT NULL, \"sync_status\" TEXT NOT NULL DEFAULT 'PENDING', \"attempts\" INTEGER NOT NULL DEFAULT 0, \"last_error\" TEXT NULL, \"next_attempt_at_utc_micros\" INTEGER NULL, PRIMARY KEY (\"event_id\"), CHECK (device_seq > 0), CHECK (schema_version > 0), CHECK (attempts >= 0), CHECK (length(event_id) > 0), CHECK (length(idempotency_key) > 0), CHECK (length(shop_id) > 0), CHECK (length(device_id) > 0), CHECK (length(local_session_id) > 0), CHECK (length(actor_user_id) > 0), CHECK (length(event_type) > 0), CHECK (length(time_confidence) > 0), CHECK (sync_status IN ('PENDING', 'IN_FLIGHT', 'ACKED', 'REJECTED', 'CONFLICT'))) STRICT;"
+        }
+      ]
+    },
+    {
+      "name": "outbox_events_no_delete",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TRIGGER outbox_events_no_delete BEFORE DELETE ON outbox_events BEGIN SELECT RAISE (ABORT, 'outbox_events is append-only: DELETE is forbidden');END"
+        }
+      ]
+    },
+    {
+      "name": "outbox_events_envelope_immutable",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TRIGGER outbox_events_envelope_immutable BEFORE UPDATE OF event_id, idempotency_key, shop_id, device_id, local_session_id, actor_user_id, device_seq, event_type, schema_version, payload_json, occurred_at_utc_micros, device_utc_offset_minutes, server_offset_millis, server_offset_observed_at_utc_micros, time_confidence ON outbox_events BEGIN SELECT RAISE (ABORT, 'outbox_events envelope is immutable');END"
+        }
+      ]
+    },
+    {
+      "name": "device_identity",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TABLE IF NOT EXISTS \"device_identity\" (\"singleton\" INTEGER NOT NULL DEFAULT 1, \"install_id\" TEXT NOT NULL, \"created_at_utc_micros\" INTEGER NOT NULL, \"last_device_seq\" INTEGER NOT NULL DEFAULT 0, PRIMARY KEY (\"singleton\"), CHECK (singleton = 1), CHECK (last_device_seq >= 0), CHECK (length(install_id) > 0)) STRICT;"
+        }
+      ]
+    },
+    {
+      "name": "device_identity_no_delete",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TRIGGER device_identity_no_delete BEFORE DELETE ON device_identity BEGIN SELECT RAISE (ABORT, 'device_identity must not be deleted');END"
+        }
+      ]
+    },
+    {
+      "name": "device_identity_immutable",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TRIGGER device_identity_immutable BEFORE UPDATE OF singleton, install_id, created_at_utc_micros ON device_identity BEGIN SELECT RAISE (ABORT, 'device_identity install ID is immutable');END"
+        }
+      ]
+    },
+    {
+      "name": "device_identity_sequence_monotonic",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TRIGGER device_identity_sequence_monotonic BEFORE UPDATE OF last_device_seq ON device_identity WHEN NEW.last_device_seq < OLD.last_device_seq BEGIN SELECT RAISE (ABORT, 'device sequence must not decrease');END"
+        }
+      ]
+    }
+  ]
+}

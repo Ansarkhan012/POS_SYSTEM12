@@ -60,3 +60,8 @@ key.properties
 
 # Generated localization code (ADR-028): produced by `flutter gen-l10n`.
 lib/l10n/app_localizations*.dart
+
+# Generated Drift code (ADR-029, P2-D1): produced by `dart run build_runner build`.
+*.g.dart
+# Generated Drift schema test helpers (regenerated from drift_schemas/).
+test/core/database/generated/

@@ -84,6 +84,24 @@ discovered (AGENTS.md §4). Never delete an entry; mark it obsolete with a reaso
 - **G69 — Assuming `--no-pub` stops `flutter create` from writing `pubspec.lock`.** → In Flutter 3.44.1 the lock file was still written; regenerate it with `flutter pub get` in the real project.
 - **G70 — Trusting a heavily loaded Android emulator for UI verification.** → On this host the tablet AVD repeatedly showed system ANR dialogs (load average > 30) even after a cold boot; treat device checks as unverified rather than claiming them.
 
+## Encrypted local database (discovered in Phase 2, ADR-029)
+- **G71 — Trusting SQLite3 Multiple Ciphers to fail on a bad key.** → An omitted/empty key means *no encryption*, and `PRAGMA key` returns `ok` even for a wrong key. Always verify `PRAGMA cipher`, perform a real read, and check the file header (see `configureEncryptedConnection`).
+- **G72 — Letting a `SqliteException` escape from key setup.** → Its `toString()` quotes the failing statement, i.e. `PRAGMA key` with the key. Replace such errors with typed failures without a cause.
+- **G73 — Enabling Drift `logStatements`.** → It would print the key PRAGMA. Never enable it.
+- **G74 — Adding `sqlite3_flutter_libs` / `sqlcipher_flutter_libs` or changing the `sqlite3` hook `source`.** → They are EOL and risk loading plain SQLite; the hook must stay `source: sqlite3mc`.
+- **G75 — Using Drift's in-memory `SchemaVerifier` / `validateDatabaseSchema`.** → SQLite3MC cannot key in-memory databases, so they would be unkeyed. Compare schemas of encrypted **file** databases (see `schema_migration_test.dart`).
+- **G76 — Upgrading `sqlite3` beyond 3.5.2 or `build_runner` beyond 2.15.1 on Flutter 3.44.1.** → Flutter's `meta` pin makes them unresolvable; they move only with an approved toolchain upgrade.
+- **G77 — Passing `--delete-conflicting-outputs` to `build_runner` 2.15.** → The flag was removed; use `dart run build_runner build`.
+- **G78 — Running `drift_dev schema generate` into a missing directory.** → Create the output directory first (`mkdir -p test/core/database/generated`).
+- **G79 — Expecting data to survive two `flutter test integration_test` runs.** → The app is uninstalled after each run (wiping data and Keystore entries). Use `--no-uninstall` for restart-persistence checks.
+- **G80 — Letting Riverpod 3 auto-retry a fail-closed provider.** → Riverpod 3 retries failing providers by default; database providers set `retry: (_, _) => null`.
+- **G81 — Deleting a test database directory while the database is still open (Windows).** → Provider `onDispose` cannot await `close()`; close the database explicitly before deleting temp files.
+- **G82 — Comparing Drift schema SQL verbatim.** → Generated reference schemas quote primary-key identifiers differently; compare structure plus whitespace/quote-normalized SQL.
+- **G83 — Using `contains` with decoded JSON maps.** → Dart maps compare by identity; compare extracted values.
+- **G84 — Re-enabling Android Auto Backup.** → A restored database without its Keystore key is unreadable (`InvalidKeyException`) and data would leave the device; keep P2-D4.
+- **G85 — Casually upgrading `flutter_secure_storage`.** → The 11.x line had breaking and frequent releases; it is pinned exactly and every upgrade needs review.
+- **G86 — Building offline.** → The `sqlite3` hook downloads prebuilt native binaries from GitHub releases at build time (sha256-verified); builds and CI need network access (or a reviewed `url_pattern` mirror).
+
 ## Scope & architecture
 - **G32 — Putting every future feature into the first schema.** → Model only what the active phase needs; extend later with migrations.
 - **G33 — Prematurely introducing microservices, Kafka, Kubernetes, Redis clusters.** → Modular monolith on Supabase until a measured need exists.

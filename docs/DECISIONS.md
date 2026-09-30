@@ -252,6 +252,90 @@ review binding decisions (2026-09-29).
 - **Rationale:** smallest foundation satisfying ADR-026 without code generation or build tooling; conventional layout avoids an extra directory level for a single app.
 - **Consequences:** Any additional package requires justification and approval (AGENTS.md §2). A clean checkout must run `flutter gen-l10n` before `flutter analyze`.
 
+### ADR-029 — Phase 2 local data foundation choices
+- **Date:** 2026-09-30 · **Status:** **ACCEPTED** (user-approved: Part 1 at Phase 2 activation, Parts 2–5 at the Stage A checkpoint). Nothing in this ADR modifies ADR-001…ADR-028; P2-D1 clarifies the scope of ADR-028 item 3.
+- **Revision note:** drafted as PROPOSED at the Stage A checkpoint; finalized in place to ACCEPTED on 2026-09-30 after user approval, with the Stage B verification results recorded in Part 7.
+
+#### Decision summary
+- **Engine:** SQLite3 Multiple Ciphers (SQLite3MC 2.5.0 on SQLite 3.53.4), bundled by `package:sqlite3` **3.5.2** through its native build hook (`hooks: user_defines: sqlite3: source: sqlite3mc`), used via Drift's `NativeDatabase`. No plain/system SQLite, no fallback, no unencrypted intermediate database.
+- **Format and key:** the SQLCipher-4-compatible scheme (`PRAGMA cipher = 'sqlcipher'`, `PRAGMA legacy = 4`) with a **raw 256-bit key** (`PRAGMA key = "x'<64 hex>'"`, no KDF) generated from `Random.secure()`.
+- **Why SQLite3MC:** it is Drift's currently documented encryption path; it is MIT-licensed and needs no OpenSSL; it ships prebuilt, sha256-verified, SLSA-attested binaries for every Android ABI **and** for Windows/Linux, so real encryption runs in host tests and CI; and with the SQLCipher scheme its files are SQLCipher 4-compatible, meeting ADR-027's wording literally.
+- **Why not genuine SQLCipher (Candidate B):** Drift no longer documents a straightforward SQLCipher setup; the `package:sqlite3` SQLCipher build links OpenSSL on Android/Windows/Linux (larger APK, OpenSSL licence and advisory surface) and may lag the SQLite version. B remains the reviewed fallback only if the approved approach fails a required security or compatibility check.
+- **Why `cipher_version` was replaced:** it is a SQLCipher-specific pragma that SQLite3MC does not implement. The engine-appropriate replacement (Part 3, exact runtime sequence below) was approved by the user and is equivalent or stronger; it does not weaken ADR-027.
+- **Secure storage:** `flutter_secure_storage` **11.2.0** (exact pin), default Keystore-backed `AndroidOptions` with the dedicated namespace `dokan_pro_database_key` and key name `dokan_pro.local_database.key.v1`; the store interface has no delete operation.
+- **Other choices:** journal mode = SQLite default rollback journal (`DELETE`), verified encrypted by tests; database file `dokan_pro_local.db` in `getApplicationSupportDirectory()`; times stored as integer UTC microseconds plus the device UTC offset in minutes; `time_confidence` is validated in Dart (`TimeConfidence.unknown` only in Phase 2) rather than by a DB CHECK, so later phases can add values without rebuilding the append-only table.
+- **Exact runtime verification (production `configureEncryptedConnection`, run first on every connection, and in a synchronous preflight before Drift opens the file):** (1) the key type cannot be empty (32 bytes; an empty key is additionally refused); (2) `PRAGMA cipher = 'sqlcipher'`; (3) `PRAGMA legacy = 4`; (4) `PRAGMA key = "x'<hex>'"`; (5) `PRAGMA cipher` must return `sqlcipher`, else `EncryptionNotActive`; (6) `SELECT count(*) FROM sqlite_master` must succeed, else `LocalDataUnavailable(wrongKeyOrUnreadableDatabase)`; (7) `PRAGMA foreign_keys = ON`. The opener additionally refuses an existing file with a plaintext SQLite header and re-checks the header after opening/creating. SQLite exceptions are replaced by typed failures without a cause because `SqliteException.toString()` quotes the failing statement (which for `PRAGMA key` contains the key).
+
+#### Part 1 — User-approved Phase 2 decisions (2026-09-30)
+- **P2-D1:** `drift_dev` + `build_runner` are permitted **solely for Drift code generation**. This clarifies the scope of ADR-028 item 3 (which banned `build_runner` as part of *Riverpod* code generation); Riverpod code generation remains forbidden. Generated Drift `*.g.dart` files are **not committed**; CI runs `dart run build_runner build` before analyze/test.
+- **P2-D2:** the database is **not** opened at app startup in Phase 2; infrastructure is built and tested only.
+- **P2-D3:** **fail closed** when the key is missing, corrupt, unusable or wrong while an encrypted database exists; never delete, overwrite, rename, recreate or silently replace it.
+- **P2-D4:** Android app-data backup disabled (`android:allowBackup="false"`) with data-extraction exclusions.
+- **P2-D5:** a client-generated random UUIDv4 **install ID**, stored inside the encrypted database, is the future device identity and outbox `device_id`; reinstall = new install ID.
+
+#### Part 2 — Encrypted SQLite adapter for Drift (comparison)
+Research date 2026-09-30; sources: pub.dev API, package repositories, Drift documentation (`docs/content/platforms/encryption.md`), `package:sqlite3` hook documentation (`sqlite3/doc/hook.md`), SQLite3MultipleCiphers pragma documentation, GitHub release assets.
+
+**Toolchain compatibility (verified by dependency resolution in a scratch copy of `pubspec.yaml`; the project was not modified):** Flutter 3.44.1 pins `meta` 1.18.0. Consequently `sqlite3` **3.6.0 does not resolve** (via `hooks` 2.2 → `record_use` ^1.0 → `meta` ^1.19) and `build_runner` **≥ 2.15.2 does not resolve** (via `analyzer` ≥ 13.3 → `meta` ^1.18.3). A consistent set resolves:
+
+| Package | Resolved | Publisher | Licence |
+|---|---|---|---|
+| `drift` | 2.35.0 (2026-09-09) | simonbinder.eu | MIT |
+| `sqlite3` | **3.5.2** (2026-08-19; bundles SQLite 3.53.4, SQLite3 Multiple Ciphers 2.5.0, SQLCipher 4.18.0) | simonbinder.eu | MIT (native libraries: see below) |
+| `drift_dev` (dev) | 2.35.0 | simonbinder.eu | MIT |
+| `build_runner` (dev) | **2.15.1** | tools.dart.dev | BSD-3-Clause |
+| `path_provider` | 2.1.6 (Android impl 2.3.1) | flutter.dev | BSD-3-Clause |
+| `path` | 1.9.1 | dart.dev | BSD-3-Clause |
+| `flutter_secure_storage` | 11.2.0 (platform interface 2.1.1) | steenbakker.dev | BSD-3-Clause |
+| `integration_test` (dev) | Flutter SDK 3.44.1 | Flutter | BSD-3-Clause |
+Transitive highlights: `analyzer` 13.0.0, `sqlparser` 0.45.0, `hooks` 2.0.2, `native_toolchain_c` 0.19.2, `code_assets` 1.2.1; `flutter_riverpod` 3.4.3 and `intl` 0.20.2 unchanged.
+
+| # | Candidate | Status / maintenance | Host tests (Windows local, `ubuntu-latest` CI) with real encryption | Plain-SQLite loading risk | Key format | Notes | Verdict |
+|---|---|---|---|---|---|---|---|
+| A | **`sqlite3` 3.5.2 build hook `source: sqlite3mc`** (SQLite3 Multiple Ciphers 2.5.0) used via `drift/native.dart` `NativeDatabase` | **Drift's currently documented and recommended encryption path** (drift ≥ 2.32). Actively maintained (sqlite3.dart pushed 2026-09-28; SQLite3MC pushed 2026-09-29, release v2.5.1 2026-08-27). Prebuilt binaries from immutable GitHub releases, sha256-verified by the hook, SLSA-3 attestations from 3.5.2. | **Yes** — prebuilt `sqlite3mc.x64.windows.dll` and `libsqlite3mc.x64.linux.so` exist for 3.5.2 | Low: one `sqlite3` package, library chosen by a single pubspec hook define; the deprecated `sqlite3_flutter_libs` / `sqlcipher_flutter_libs` must **not** be added. Still enforced at runtime (Part 3). | Raw 256-bit key without KDF supported: `PRAGMA key = "x'<64 hex>'"` (SQLCipher scheme) or `'raw:<64 hex>'` (ChaCha20 scheme) | MIT licence, no OpenSSL. Can write a **SQLCipher 4-compatible file format** by selecting the `sqlcipher` cipher scheme (`PRAGMA cipher = 'sqlcipher'`, `PRAGMA legacy = 4`) before `PRAGMA key`, satisfying ADR-027's "SQLCipher-compatible" wording literally. **Caution (documented by SQLite3MC):** an omitted/empty key means *no encryption*, and `PRAGMA key` returns `ok` even for a wrong key — so key presence and on-disk encryption must be verified (Part 3). SQLite3MC exposes `PRAGMA cipher`, not SQLCipher's `PRAGMA cipher_version`. | **RECOMMENDED** |
+| B | `sqlite3` 3.5.2 build hook `source: sqlcipher` (SQLCipher 4.18.0 Community Edition) | Supported by `package:sqlite3` (restored in 3.3.3), but Drift's documentation states SQLCipher "is no longer supported with a straightforward setup" and recommends SQLite3MC. | **Yes** — `sqlcipher.x64.windows.dll`, `libsqlcipher.x64.linux.so` exist | Low (same single-define mechanism) | Raw key `x'…'` supported; `PRAGMA cipher_version` available | Genuine SQLCipher (BSD-3-Clause) but **links OpenSSL (Apache-2.0) on Android, Windows and Linux** (larger APK, OpenSSL advisory surface); `package:sqlite3` notes the SQLCipher build may use an older SQLite than the other builds. | Acceptable alternative |
+| C | `encrypted_drift` + `sqflite_sqlcipher` 3.4.1 | `encrypted_drift` is **not published on pub.dev** (git dependency only); Java platform plugin | **No** — sqflite plugins do not run in host `flutter test` | n/a | passphrase | Git dependency, no host tests, not the recommended path | Rejected |
+| D | `sqlcipher_flutter_libs` (+ `sqlite3` 2.x) | **End-of-life** (`0.7.0+eol`, 2026-02-15); superseded by `sqlite3` 3.x hooks | — | High (legacy dual-library setups) | — | Deprecated | Rejected |
+| E | `sqlite3` hook `source: source` / custom SQLCipher build | Supported but requires maintaining native build flags and sources | Possible | Low | any | Unnecessary build complexity and supply-chain burden | Rejected |
+| F | `sqlite3` hook `source: system` | Uses OS SQLite (not encrypted on Android) | — | **Plain SQLite by definition** | — | Violates ADR-027 | Rejected |
+
+**Recommendation (Part 2):** **Candidate A** — `drift` 2.35.0 + `sqlite3` 3.5.2 with `hooks: user_defines: sqlite3: source: sqlite3mc`, configured to the **SQLCipher 4-compatible cipher scheme** (`cipher = 'sqlcipher'`, `legacy = 4`) and a **raw 256-bit key** (`x'…'`, no KDF). If the user prefers genuine SQLCipher binaries, Candidate B is the reviewed alternative (same code; different hook define; OpenSSL licence/size trade-off).
+
+#### Part 3 — Encryption verification design (applies to A; B equivalent)
+Because SQLite3MC does not provide `PRAGMA cipher_version`, the Phase 2 instruction's `cipher_version` check (§7.7) is proposed to be satisfied by the following **equivalent-or-stronger** checks (user approval of Candidate A includes approval of this substitution):
+1. Refuse any empty/absent key before opening (SQLite3MC treats an empty key as "no encryption").
+2. On every connection, as the first statements: `PRAGMA cipher = 'sqlcipher'`, `PRAGMA legacy = 4`, `PRAGMA key = "x'<hex>'"`; then require `PRAGMA cipher` to return `sqlcipher` (proves the SQLite3MC library is loaded and the scheme is active — plain SQLite returns no row).
+3. Execute `SELECT count(*) FROM sqlite_master` to prove the key is correct (SQLite3MC accepts wrong keys at `PRAGMA key` time).
+4. On first creation, force a write, then verify the file's first 16 bytes are **not** `"SQLite format 3\0"`; refuse to continue otherwise.
+5. Tests additionally prove: open without key fails, wrong key fails, a plaintext marker is absent from the database/`-wal`/`-journal` bytes.
+With Candidate B, step 2 becomes: require a non-empty `PRAGMA cipher_version`.
+
+#### Part 4 — Platform-backed secure storage for the database key
+| # | Candidate | Maintenance | Android mechanism | minSdk / compileSdk | Backup behaviour | Verdict |
+|---|---|---|---|---|---|---|
+| S1 | **`flutter_secure_storage` 11.2.0** (pinned exactly) | Active (repo pushed 2026-09-23; 160/160 pub points; 4.4k likes). **High release churn:** 11.0.0 (2026-08-06, breaking: legacy ciphers and `encryptedSharedPreferences` removed), 11.1.0, 11.1.1, 11.2.0 within September 2026 — pin the exact version and review every upgrade. | Default `AndroidOptions()`: AES-GCM storage cipher with the AES key wrapped by an **Android Keystore RSA-OAEP** key; use a dedicated `storageNamespace` | minSdk **24** (matches project); compileSdk follows `flutter.compileSdkVersion` (36) since 11.1.0 | Package README requires disabling Auto Backup to avoid `InvalidKeyException` after restore — consistent with **P2-D4** | **RECOMMENDED** |
+| S2 | Custom Kotlin platform channel (Keystore non-exportable AES-GCM key wrapping the DB key, ciphertext in no-backup app storage) | Self-maintained | Keystore directly | any ≥ 23 | Controlled by app | No third-party dependency, but custom cryptographic code, more native code and tests to maintain — rejected unless the user prefers zero dependencies |
+| S3 | `flutter_secure_storage` biometric options | — | Keystore + biometric | API 28+ for enforcement | — | Rejected: shared cashier tablets must work offline without per-person biometrics; not required by ADR-027 |
+The platform implementations for Windows/Linux/macOS/web arrive transitively with S1 and are unused on Android. Unit tests use an in-memory fake implementing the `SecureKeyStore` interface; the real store is exercised only by the on-device integration test.
+
+#### Part 5 — Supporting dependencies
+- **`path_provider` 2.1.6** — app-private directory for the database file (`getApplicationSupportDirectory()`); Flutter team, BSD-3-Clause. Alternative (custom channel) rejected.
+- **`path` 1.9.1** — path joining; already transitive; Dart team, BSD-3-Clause.
+- **`integration_test`** (SDK) — on-device encryption proof; not added to CI (ADR-028 scope) unless the user approves.
+- **Not needed / rejected:** `drift_flutter` (hides connection setup where the key and verification must be explicit), `uuid` (in-house `Random.secure()` UUIDv4 generator per the Phase 2 instruction), `sqlite3_flutter_libs` / `sqlcipher_flutter_libs` (EOL; would risk loading plain SQLite).
+
+#### Part 6 — Android / CI implications to verify in Stage B
+- No minSdk change is indicated: `flutter_secure_storage` 11.x requires minSdk 24 (= project), and no minSdk requirement was found for the `sqlite3` prebuilt Android libraries — to be confirmed by the Stage B debug build. compileSdk stays 36. Any required change triggers stop-and-ask.
+- The `sqlite3` build hook **downloads prebuilt native binaries from GitHub releases at build time** (sha256-verified). Local builds and CI runners need network access to `github.com` release assets. `url_pattern` can later point to an internal mirror if required.
+- Verify in Stage B: bundled `.so` files are present for all Android ABIs in the debug APK, Google Play **16 KB page-size** alignment of the native libraries, and that host `flutter test` loads the SQLite3MC library on Windows and `ubuntu-latest`.
+- CI adds only setup steps: `dart run build_runner build` (P2-D1; `--delete-conflicting-outputs` was removed in `build_runner` 2.15), a committed-schema-dump freshness check, and generation of the schema test helpers; no secrets; actions stay SHA-pinned.
+
+#### Part 7 — Stage B verification results (2026-09-30)
+- **Compatibility gate (debug APK):** `libsqlite3mc.so` packaged for **arm64-v8a, armeabi-v7a, x86_64** (all ABIs Flutter builds); **no** `libsqlite3.so` / `libsqlcipher.so` (no plain-SQLite conflict); merged manifest **minSdk 24 / targetSdk 36** (unchanged); every native library has ELF LOAD alignment **≥ 0x4000 (16 KB)** and `zipalign -c -P 16` passes (libraries stored uncompressed). Other native libraries: `libflutter.so`, `libdartjni.so` (via the JNI-based `path_provider_android`), and `libVkLayer_khronos_validation.so` (Flutter debug-only Vulkan validation layer).
+- **Host tests (Windows):** real SQLite3MC encryption in `flutter test` — header not plaintext, unreadable without key / with wrong key, plaintext marker absent from database and rollback-journal bytes (checked during a rewriting transaction and after close), correct key reopens and reads. A mutation check (temporarily removing the key PRAGMA) made all key-dependent proofs fail and the production header check refuse the file; the code was restored byte-identical.
+- **Schema tests:** Drift's in-memory `SchemaVerifier` is not used because SQLite3MC cannot key in-memory databases; schema and migration tests compare structures of **encrypted file** databases created from the committed dump and by the app.
+- **On-device (Android emulator, Medium_Tablet AVD):** the integration test passed using the real Keystore-backed storage and native library; a raw database pulled with `adb run-as` had a non-plaintext header, contained no marker, and was rejected by a standard SQLite build ("file is not a database"); a separate `verify` run in a **fresh app process** (`--no-uninstall`) decrypted the data with the key read back from Keystore-backed storage. Real-tablet on-device run of the Phase 2 integration test: not performed in this session (no tablet connected).
+
 ---
 
 ## Open questions

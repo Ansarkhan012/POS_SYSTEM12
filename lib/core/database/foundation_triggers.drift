@@ -1,0 +1,46 @@
+-- Database-level integrity guarantees for the Phase 2 foundation tables
+-- (ADR-009, ADR-029, GOTCHAS G05). These hold even for raw SQL.
+import 'tables.dart';
+
+-- Outbox events are never deleted.
+CREATE TRIGGER outbox_events_no_delete
+BEFORE DELETE ON outbox_events
+BEGIN
+  SELECT RAISE(ABORT, 'outbox_events is append-only: DELETE is forbidden');
+END;
+
+-- The event envelope is immutable once written. Only sync bookkeeping
+-- columns (sync_status, attempts, last_error, next_attempt_at_utc_micros)
+-- may change later (Phase 8).
+CREATE TRIGGER outbox_events_envelope_immutable
+BEFORE UPDATE OF event_id, idempotency_key, shop_id, device_id,
+  local_session_id, actor_user_id, device_seq, event_type, schema_version,
+  payload_json, occurred_at_utc_micros, device_utc_offset_minutes,
+  server_offset_millis, server_offset_observed_at_utc_micros, time_confidence
+ON outbox_events
+BEGIN
+  SELECT RAISE(ABORT, 'outbox_events envelope is immutable');
+END;
+
+-- The device identity row is never deleted.
+CREATE TRIGGER device_identity_no_delete
+BEFORE DELETE ON device_identity
+BEGIN
+  SELECT RAISE(ABORT, 'device_identity must not be deleted');
+END;
+
+-- The install ID never changes while the database exists (P2-D5).
+CREATE TRIGGER device_identity_immutable
+BEFORE UPDATE OF singleton, install_id, created_at_utc_micros
+ON device_identity
+BEGIN
+  SELECT RAISE(ABORT, 'device_identity install ID is immutable');
+END;
+
+-- The device sequence never moves backwards.
+CREATE TRIGGER device_identity_sequence_monotonic
+BEFORE UPDATE OF last_device_seq ON device_identity
+WHEN NEW.last_device_seq < OLD.last_device_seq
+BEGIN
+  SELECT RAISE(ABORT, 'device sequence must not decrease');
+END;
