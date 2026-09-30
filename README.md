@@ -25,7 +25,7 @@ kiryana / general stores, starting in Karachi, Pakistan. It consists of:
 | Item          | Value                                   |
 |---------------|-----------------------------------------|
 | Active phase  | **Phase 2 — Local Data Foundation**     |
-| Status        | **READY_FOR_REVIEW**                    |
+| Status        | **APPROVED**                            |
 | Phases 0–1    | APPROVED                                |
 | Phases 3–19   | LOCKED                                  |
 
